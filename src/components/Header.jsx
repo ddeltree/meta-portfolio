@@ -43,7 +43,6 @@ const Header = () => {
       });
     }
   };
-
   return (
     <Box
       position="fixed"
@@ -63,10 +62,39 @@ const Header = () => {
           justifyContent="space-between"
           alignItems="center"
         >
-          <nav>{/* Add social media links based on the `socials` data */}</nav>
+          <nav>
+            <HStack spacing={8}>
+              {/* Add social media links based on the `socials` data */}
+              {socials.map(({ icon, url }) => (
+                <a
+                  key={url}
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={handleClick(url)}
+                >
+                  <FontAwesomeIcon icon={icon} size="2x" />
+                </a>
+              ))}
+            </HStack>
+          </nav>
           <nav>
             <HStack spacing={8}>
               {/* Add links to Projects and Contact me section */}
+              <a
+                href="#projects"
+                rel="noopener noreferrer"
+                onClick={handleClick('projects')}
+              >
+                Projects
+              </a>
+              <a
+                href="#contact-me"
+                rel="noopener noreferrer"
+                onClick={handleClick('contactme')}
+              >
+                Contact Me
+              </a>
             </HStack>
           </nav>
         </HStack>
