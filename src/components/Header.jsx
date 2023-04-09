@@ -9,6 +9,8 @@ import {
 } from '@fortawesome/free-brands-svg-icons';
 import { Box, HStack } from '@chakra-ui/react';
 
+import { useScroll } from '../hooks/useScroll';
+
 const socials = [
   {
     icon: faEnvelope,
@@ -43,8 +45,20 @@ const Header = () => {
       });
     }
   };
+  // SCROLLING HEADER BAR
+  const headerRef = useRef();
+  const { scrollDirection } = useScroll();
+
+  useEffect(() => {
+    console.log(headerRef);
+    headerRef.current.style.transform = `translateY(${
+      scrollDirection === 'down' ? '-200px' : '0px'
+    })`;
+  }, [scrollDirection]);
+
   return (
     <Box
+      ref={headerRef}
       position="fixed"
       top={0}
       left={0}

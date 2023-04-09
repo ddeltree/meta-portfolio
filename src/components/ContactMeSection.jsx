@@ -20,17 +20,15 @@ import { useAlertContext } from '../context/alertContext';
 const LandingSection = () => {
   const { isLoading, response, submit } = useSubmit();
   const { onOpen } = useAlertContext();
-
+  const initialValues = {
+    firstName: '',
+    email: '',
+    type: '',
+    comment: '',
+  };
   const formik = useFormik({
-    initialValues: {
-      firstName: '',
-      email: '',
-      type: '',
-      comment: '',
-    },
-    onSubmit: (e, values) => {
-      e.preventDefault();
-      alert('submit');
+    initialValues: initialValues,
+    onSubmit: (values) => {
       submit('www.google.com', values);
     },
     validationSchema: Yup.object({
@@ -39,16 +37,27 @@ const LandingSection = () => {
         .max(50, 'Too Long!')
         .required('Required'),
       email: Yup.string().email('Invalid email address').required('Required'),
-      type: Yup.string().required('Required'),
+      type: Yup.string(),
       comment: Yup.string().required('Required'),
     }),
   });
+
+  useEffect(() => {
+    if (response) {
+      if (response.type === 'success') {
+        formik.resetForm({ initialValues });
+      }
+      onOpen(response.type, response.message);
+    }
+  }, [response]);
+
   const isNameInvalid =
     formik.touched.firstName && !formik.isValid && formik.errors.firstName;
   const isEmailInvalid =
     formik.touched.comment && !formik.isValid && formik.errors.email;
   const isCommentInvalid =
     formik.touched.comment && !formik.isValid && formik.errors.comment;
+
   return (
     <FullScreenSection
       isDarkBackground
@@ -68,7 +77,12 @@ const LandingSection = () => {
                 {...formik.getFieldProps()}
               >
                 <FormLabel htmlFor="firstName">Name</FormLabel>
-                <Input id="firstName" name="firstName" />
+                <Input
+                  id="firstName"
+                  name="firstName"
+                  value={formik.values.firstName}
+                  onChange={formik.handleChange}
+                />
                 <FormErrorMessage>{isNameInvalid}</FormErrorMessage>
               </FormControl>
               <FormControl
@@ -76,12 +90,23 @@ const LandingSection = () => {
                 {...formik.getFieldProps()}
               >
                 <FormLabel htmlFor="email">Email Address</FormLabel>
-                <Input id="email" name="email" type="email" />
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={formik.values.email}
+                  onChange={formik.handleChange}
+                />
                 <FormErrorMessage>{isEmailInvalid}</FormErrorMessage>
               </FormControl>
               <FormControl {...formik.getFieldProps()}>
                 <FormLabel htmlFor="type">Type of enquiry</FormLabel>
-                <Select id="type" name="type">
+                <Select
+                  id="type"
+                  name="type"
+                  value={formik.values.type}
+                  onChange={formik.handleChange}
+                >
                   <option value="hireMe">Freelance project proposal</option>
                   <option value="openSource">
                     Open source consultancy session
@@ -94,11 +119,17 @@ const LandingSection = () => {
                 {...formik.getFieldProps()}
               >
                 <FormLabel htmlFor="comment">Your message</FormLabel>
-                <Textarea id="comment" name="comment" height={250} />
+                <Textarea
+                  id="comment"
+                  name="comment"
+                  height={250}
+                  value={formik.values.comment}
+                  onChange={formik.handleChange}
+                />
                 <FormErrorMessage>{isCommentInvalid}</FormErrorMessage>
               </FormControl>
               <Button type="submit" colorScheme="purple" width="full">
-                Submit
+                {isLoading ? 'Wait...' : 'Submit'}
               </Button>
             </VStack>
           </form>
